@@ -12,16 +12,27 @@ marked.setOptions({
   smartypants: true
 });
 
+// 检查是否是Markdown文件
+function isMarkdownFile() {
+  // 仅检查是否是.md后缀的文件
+  return window.location.pathname.toLowerCase().endsWith('.md');
+}
+
+// 检查存储的渲染状态
+chrome.storage.local.get(['isMarkdownRendered'], function(result) {
+  if (isMarkdownFile() && result.isMarkdownRendered) {
+    initializeMarkdownEye();
+  }
+});
+
 // 初始化插件
 function initializeMarkdownEye() {
+  // 如果不是markdown文件，直接返回
+  if (!isMarkdownFile()) return;
+  
   // 检查是否已经初始化
   if (document.querySelector('.markdown-eye-controls')) {
     return; // 如果已经存在控制按钮，则不重复创建
-  }
-
-  // 检查是否是Markdown文件
-  if (!isMarkdownFile()) {
-    return;
   }
 
   // 保存原始内容
@@ -48,15 +59,14 @@ function initializeMarkdownEye() {
   
   // 创建控制按钮
   createControlButtons();
-  
-  // 初始化主题
-  initTheme();
 
   isMarkdownRendered = true;
 }
 
 // 恢复原始内容
 function restoreOriginal() {
+  if (!isMarkdownFile()) return;
+  
   if (originalContent) {
     // 移除所有添加的元素
     const controls = document.querySelector('.markdown-eye-controls');
@@ -66,20 +76,20 @@ function restoreOriginal() {
 
     // 恢复原始内容
     document.body.innerHTML = originalContent;
-    
     isMarkdownRendered = false;
-    
-    // 移除主题相关的类
-    document.body.classList.remove('dark-theme');
   }
 }
 
 // 切换Markdown渲染
 function toggleMarkdown() {
+  if (!isMarkdownFile()) return;
+  
   if (isMarkdownRendered) {
     restoreOriginal();
+    chrome.storage.local.set({ isMarkdownRendered: false });
   } else {
     initializeMarkdownEye();
+    chrome.storage.local.set({ isMarkdownRendered: true });
   }
 }
 
@@ -200,42 +210,29 @@ function generateHeadingId(text) {
 
 // 主题切换功能
 function toggleTheme() {
-  const body = document.body;
-  const container = document.querySelector('.markdown-eye-content');
-  const isDark = body.classList.toggle('dark-theme');
-  container.classList.toggle('dark-theme');
+  if (!isMarkdownFile()) return;
   
-  // 使用 chrome.storage.local 保存主题设置
-  chrome.storage.local.set({ 'markdown-eye-theme': isDark ? 'dark' : 'light' });
-}
-
-// 初始化主题
-function initTheme() {
-  // 使用 chrome.storage.local 获取主题设置
-  chrome.storage.local.get(['markdown-eye-theme'], function(result) {
-    if (result['markdown-eye-theme'] === 'dark') {
-      document.body.classList.add('dark-theme');
-      const container = document.querySelector('.markdown-eye-content');
-      if (container) {
-        container.classList.add('dark-theme');
-      }
+  const isDark = document.body.classList.contains('dark-theme');
+  if (isDark) {
+    document.body.classList.remove('dark-theme');
+    const container = document.querySelector('.markdown-eye-content');
+    if (container) {
+      container.classList.remove('dark-theme');
     }
-  });
-}
-
-// 检查是否是Markdown文件
-function isMarkdownFile() {
-  return window.location.pathname.toLowerCase().endsWith('.md');
+  } else {
+    document.body.classList.add('dark-theme');
+    const container = document.querySelector('.markdown-eye-content');
+    if (container) {
+      container.classList.add('dark-theme');
+    }
+  }
+  // 保存主题设置
+  chrome.storage.local.set({ isDarkTheme: !isDark });
 }
 
 // 监听扩展消息
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "toggleMarkdown") {
+  if (request.action === "toggleMarkdown" && isMarkdownFile()) {
     toggleMarkdown();
   }
 });
-
-// 初始化
-if (isMarkdownFile()) {
-  initializeMarkdownEye();
-}
