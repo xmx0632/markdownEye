@@ -391,10 +391,10 @@ body.dark-theme {
 /* 目录容器样式 */
 .toc-container {
   position: fixed;
-  top: 45px;  /* 调整顶部位置，给按钮留出空间 */
+  top: 45px;
   right: -280px;
   width: 280px;
-  height: calc(100vh - 45px);
+  max-height: calc(100vh - 45px);
   background: #ffffff;
   border: 1px solid #e1e4e8;
   border-right: none;
@@ -402,6 +402,8 @@ body.dark-theme {
   transition: right 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
   z-index: 1000;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .toc-container.open {
@@ -416,12 +418,13 @@ body.dark-theme {
 
 /* 目录内容样式 */
 .toc-menu {
-  height: 100%;
+  flex: 0 1 auto;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .toc-content {
-  padding: 15px 0;
+  padding: 10px 0;
 }
 
 .toc-item {
@@ -458,14 +461,14 @@ body.dark-theme {
   top: 10px;
   right: 10px;
   display: flex;
-  gap: 8px;  /* 增加间距 */
+  gap: 8px;
   z-index: 1001;
 }
 
 .control-button {
   width: 32px;
   height: 32px;
-  border-radius: 50%;  /* 改为圆形 */
+  border-radius: 50%;
   background: #ffffff;
   border: 1px solid #e1e4e8;
   cursor: pointer;
@@ -477,7 +480,7 @@ body.dark-theme {
   transition: all 0.2s ease, background-color 0.3s ease, color 0.3s ease;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   padding: 0;
-  position: relative;  /* 添加相对定位 */
+  position: relative;
 }
 
 .control-button:hover {
@@ -506,7 +509,7 @@ body.dark-theme {
   position: relative;
   width: 32px;
   height: 32px;
-  border-radius: 50%;  /* 改为圆形 */
+  border-radius: 50%;
   background: #ffffff;
   border: 1px solid #e1e4e8;
   cursor: pointer;
@@ -518,7 +521,7 @@ body.dark-theme {
   transition: all 0.2s ease, background-color 0.3s ease, color 0.3s ease;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   padding: 0;
-  position: relative;  /* 添加相对定位 */
+  position: relative;
 }
 
 .toc-toggle-button:hover {

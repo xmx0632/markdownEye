@@ -5,7 +5,8 @@
   "description": "A Chrome extension to render Markdown documents",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "action": {
     "default_icon": {
