@@ -1,6 +1,7 @@
 // 全局变量
 let isMarkdownRendered = false;
 let originalContent = null;
+let isDarkTheme = false;
 
 // 配置marked选项
 marked.setOptions({
@@ -17,13 +18,6 @@ function isMarkdownFile() {
   // 仅检查是否是.md后缀的文件
   return window.location.pathname.toLowerCase().endsWith('.md');
 }
-
-// 检查存储的渲染状态
-chrome.storage.local.get(['isMarkdownRendered'], function(result) {
-  if (isMarkdownFile() && result.isMarkdownRendered) {
-    initializeMarkdownEye();
-  }
-});
 
 // 初始化插件
 function initializeMarkdownEye() {
@@ -86,10 +80,8 @@ function toggleMarkdown() {
   
   if (isMarkdownRendered) {
     restoreOriginal();
-    chrome.storage.local.set({ isMarkdownRendered: false });
   } else {
     initializeMarkdownEye();
-    chrome.storage.local.set({ isMarkdownRendered: true });
   }
 }
 
@@ -208,26 +200,24 @@ function generateHeadingId(text) {
     .replace(/^-+|-+$/g, '');
 }
 
-// 主题切换功能
+// 切换主题
 function toggleTheme() {
-  if (!isMarkdownFile()) return;
+  isDarkTheme = !isDarkTheme;
   
-  const isDark = document.body.classList.contains('dark-theme');
-  if (isDark) {
-    document.body.classList.remove('dark-theme');
-    const container = document.querySelector('.markdown-eye-content');
-    if (container) {
-      container.classList.remove('dark-theme');
-    }
-  } else {
-    document.body.classList.add('dark-theme');
-    const container = document.querySelector('.markdown-eye-content');
-    if (container) {
-      container.classList.add('dark-theme');
-    }
+  // 切换 body 的主题
+  document.body.classList.toggle('dark-theme');
+  
+  // 切换内容容器的主题
+  const container = document.querySelector('.markdown-eye-content');
+  if (container) {
+    container.classList.toggle('dark-theme');
   }
-  // 保存主题设置
-  chrome.storage.local.set({ isDarkTheme: !isDark });
+  
+  // 切换目录容器的主题
+  const tocContainer = document.querySelector('.toc-container');
+  if (tocContainer) {
+    tocContainer.classList.toggle('dark-theme');
+  }
 }
 
 // 监听扩展消息

@@ -4,9 +4,7 @@
   "version": "1.0",
   "description": "A Chrome extension to render Markdown documents",
   "permissions": [
-    "activeTab",
-    "scripting",
-    "storage"
+    "activeTab"
   ],
   "action": {
     "default_icon": {
@@ -22,7 +20,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*/*.md", "*://*/*/*.md"],
+      "matches": [
+        "file://*/*.md",
+        "file://*/*/*.md",
+        "http://*/*.md",
+        "https://*/*.md"
+      ],
       "js": ["lib/marked.min.js", "content.js"],
       "css": ["styles.css"]
     }
