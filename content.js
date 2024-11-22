@@ -222,7 +222,12 @@ function toggleTheme() {
 
 // 监听扩展消息
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "toggleMarkdown" && isMarkdownFile()) {
+  if (request.action === "toggleMarkdown") {
+    if (!isMarkdownFile()) {
+      // 在非 md 文件中给出提示
+      alert('MarkdownEye 只能在 Markdown 文件中使用。');
+      return;
+    }
     toggleMarkdown();
   }
 });
